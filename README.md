@@ -1,5 +1,27 @@
 # experimental-runtime
 
+> **Research prototype (2022-era):** This repository explores in-place JavaScript re-execution in an iframe to preserve state during code edits. It is **not** the current [VizHub runtime library](https://github.com/vizhub-studio/vizhub-runtime) and makes no claim of production-grade isolation for untrusted code.
+
+## Reproduce the experiment
+
+The root `package.json` defines Rollup, Mocha and a local static server:
+
+```bash
+npm install
+npm run build
+npm test         # Rebuilds, then runs Mocha
+npm run dev      # Starts local server and Rollup watcher
+```
+
+- [`src/`](src/) contains the implementation and [`test/`](test/) the checks.
+- [`public/`](public/) contains the demo assets served by the development script.
+- Re-execution assumes **idempotent rendering and cleanup**; persistent DOM and application state can otherwise accumulate side effects.
+- The iframe mechanism described below is an experiment, not a security specification. Untrusted code requires an independently reviewed sandbox origin, permissions and embedding policy.
+- This project has an older development toolchain; record any dependency/environment changes separately rather than assuming the examples run unchanged on current Node.js.
+
+## Original experiment notes
+
+
 A runtime environment for in-browser live coding using Web technologies.
 
 The fundamental idea behind this project is that JavaScript is executed in an iframe when the code is changed, _without_ re-evaluating the entire iframe. This is similar to [hot reloading](https://stackoverflow.com/questions/41428954/what-is-the-difference-between-hot-reloading-and-live-reloading-in-react-native) and [hot module replacement](https://webpack.js.org/concepts/hot-module-replacement/). This approach has a number of advantages over re-evaluating the entire iframe (setting `srcdoc`) on each code change, including:
